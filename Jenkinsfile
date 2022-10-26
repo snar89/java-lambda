@@ -118,7 +118,7 @@ def does_lambda_exist(name) {
     sh  'aws lambda get-function --function-name $name'
     isexist=true
   }
-  catch() {
+  catch(Exception e) {
     echo 'Failed'
     isexist=true
   }
