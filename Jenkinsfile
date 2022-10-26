@@ -40,10 +40,10 @@ pipeline {
             steps {
                 echo 'Deploy to QA'
                 sh 'pwd'
-                sh 'zip -g bermtec-0.0.1.zip **/target/bermtec-0.0.1.jar'
+                sh 'zip -g bermtec-0.0.1.zip target/bermtec-0.0.1.jar'
                  
                  sh 'aws --version'
-                 sh './deploy-test.sh'
+                 sh './deploy-test.sh $AWS_ACCESS_KEY $AWS_SECRET_KEY'
                  sh 'aws lambda update-function-code --function-name test  --zip-file fileb://./target/bermtec-0.0.1.zip'              
             }
         }
