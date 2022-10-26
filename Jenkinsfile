@@ -43,27 +43,26 @@ pipeline {
                 script {
                     echo 'Deploy to QA'
 
-                    echo "ARTIFACTID: ${ARTIFACTID}"
-                    echo "VERSION: ${VERSION}"
                     JARNAME = ARTIFACTID+'.'+VERSION+'.jar'
                     echo "JARNAME: ${JARNAME}"
                     sh 'pwd'
-                    sh "zip ${ARTIFACTID}-${VERSION}.zip 'target/${JARNAME}'"            
+                    // sh "zip ${ARTIFACTID}-${VERSION}.zip 'target/${JARNAME}'"            
 
                     sh 'aws configure set aws_access_key_id $AWS_ACCESS_KEY'
                     sh 'aws configure set aws_secret_access_key $AWS_SECRET_KEY'
                     sh 'aws configure set region us-east-1' 
-                    sh 'aws s3 cp ${ARTIFACTID}-${VERSION}.zip s3://bermtec228/lambda-test/'
-                    echo "Stage 2 Yes"
+                    sh 'aws s3 cp ${JARNAME} s3://bermtec228/lambda-test/'
+
                     // if (does_lambda_exist(${functionName})) {
                     //  sh './deploy-test.sh $AWS_ACCESS_KEY $AWS_SECRET_KEY'
-                        sh 'aws lambda update-function-code --function-name test  --zip-file fileb://${ARTIFACTID}-${VERSION}.zip'
+                        sh "aws lambda update-function-code --function-name test  --zip-file fileb://target/${JARNAME}"
                     //}
                 }          
             }
         }
 
         stage('Release to Prod') {
+            agent none
             steps {
                 echo 'Release to Prod'
                 script {
@@ -76,6 +75,7 @@ pipeline {
         }
 
          stage('Deploy to Prod') {
+            agent any
             steps {
                 script {
                     if (env.BRANCH_NAME == "master") {
