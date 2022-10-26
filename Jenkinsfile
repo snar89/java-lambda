@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent none
 
      options {
         //Disable concurrentbuilds for the same job
@@ -16,34 +16,36 @@ pipeline {
         AWS_SECRET_KEY = credentials('aws_secret_key')
         ARTIFACTID = readMavenPom().getArtifactId()
         VERSION = readMavenPom().getVersion()
+        JARNAME = ARTIFACTID+'-'+VERSION+'.jar'
     }
 
     stages {
-
         stage('Build Lambda') {
+            agent any
             steps {
                 echo 'Build'
                 sh 'mvn clean install -Dmaven.test.skip=true'             
             }
         }
         stage('Test') {
+            agent any
             steps {
                 echo 'Test'
                 // sh 'mvn test'
             }
         }
         stage('Push to artifactory') {
+            agent none
             steps {
                 echo 'Push to artifactory'
             }
         }
 
         stage('Deploy to QA') {
+            agent any
             steps {
                 script {
                     echo 'Deploy to QA'
-
-                    JARNAME = ARTIFACTID+'.'+VERSION+'.jar'
                     echo "JARNAME: ${JARNAME}"
                     sh 'pwd'
                     // sh "zip ${ARTIFACTID}-${VERSION}.zip 'target/${JARNAME}'"            
@@ -51,12 +53,11 @@ pipeline {
                     sh 'aws configure set aws_access_key_id $AWS_ACCESS_KEY'
                     sh 'aws configure set aws_secret_access_key $AWS_SECRET_KEY'
                     sh 'aws configure set region us-east-1' 
-                    sh 'aws s3 cp ${JARNAME} s3://bermtec228/lambda-test/'
+                    sh "aws s3 cp target/${JARNAME} s3://bermtec228/lambda-test/"
 
-                    // if (does_lambda_exist(${functionName})) {
-                    //  sh './deploy-test.sh $AWS_ACCESS_KEY $AWS_SECRET_KEY'
-                        sh "aws lambda update-function-code --function-name test  --zip-file fileb://target/${JARNAME}"
-                    //}
+
+                    sh "aws lambda update-function-code --function-name test  --zip-file fileb://target/${JARNAME}"
+
                 }          
             }
         }
@@ -80,9 +81,10 @@ pipeline {
                 script {
                     if (env.BRANCH_NAME == "master") {
                         echo 'Deploy to Prod'
-                        sh 'aws s3 cp bermtec-0.0.1.zip s3://bermtec288/lambda-prod'
+                        sh "aws s3 cp target/${JARNAME} s3://bermtec288/lambda-prod"
+                        //  sh './deploy-test.sh $AWS_ACCESS_KEY $AWS_SECRET_KEY'
                         // if (does_lambda_exist('prodfunction')) {
-                            sh 'aws lambda update-function-code --function-name prodfunction --s3-bucket bermtec288 --s3-key lambda-prod/bermtec-0.0.1.zip'
+                            sh "aws lambda update-function-code --function-name prodfunction --s3-bucket bermtec288 --s3-key lambda-prod/${JARNAME}"
                         //}  
                     }
                 }
