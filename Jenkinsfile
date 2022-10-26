@@ -26,6 +26,7 @@ pipeline {
                 sh 'mvn clean install -Dmaven.test.skip=true'             
             }
         }
+
         stage('Test') {
             agent any
             steps {
@@ -33,6 +34,7 @@ pipeline {
                 // sh 'mvn test'
             }
         }
+
         stage('Push to artifactory') {
             agent none
             steps {
@@ -45,7 +47,9 @@ pipeline {
             steps {
                 script {
                     echo 'Deploy to QA'
-                    JARNAME = ${ARTIFACTID}+'-'+${VERSION}+'.jar'
+                    echo "ARTIFACTID: ${ARTIFACTID}"
+                    echo "VERSION: ${VERSION}"
+                    JARNAME = ARTIFACTID+'-'+VERSION+'.jar'
                     echo "JARNAME: ${JARNAME}"
                     sh 'pwd'
                     // sh "zip ${ARTIFACTID}-${VERSION}.zip 'target/${JARNAME}'"            
@@ -81,7 +85,9 @@ pipeline {
                 script {
                     if (env.BRANCH_NAME == "master") {
                         echo 'Deploy to Prod'
-                        JARNAME = ${ARTIFACTID}+'-'+${VERSION}+'.jar'
+                        echo "ARTIFACTID: ${ARTIFACTID}"
+                        echo "VERSION: ${VERSION}"
+                        JARNAME = ARTIFACTID+'-'+VERSION+'.jar'
                         sh "aws s3 cp target/${JARNAME} s3://bermtec288/lambda-prod"
                         //  sh './deploy-test.sh $AWS_ACCESS_KEY $AWS_SECRET_KEY'
                         // if (does_lambda_exist('prodfunction')) {
@@ -93,6 +99,7 @@ pipeline {
         }
 
     }
+
     post {
       failure {
         echo 'failed'
