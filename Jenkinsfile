@@ -48,8 +48,7 @@ pipeline {
                     JARNAME = ARTIFACTID+'.'+VERSION+'.jar'
                     echo "JARNAME: ${JARNAME}"
                     sh 'pwd'
-                    sh 'cd target'
-                    sh 'zip ${ARTIFACTID}-${VERSION}.zip ${JARNAME}'              
+                    sh "zip ${ARTIFACTID}-${VERSION}.zip 'target/${JARNAME}'"            
 
                     sh 'aws configure set aws_access_key_id $AWS_ACCESS_KEY'
                     sh 'aws configure set aws_secret_access_key $AWS_SECRET_KEY'
