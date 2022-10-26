@@ -21,7 +21,7 @@ pipeline {
         stage('Build Lambda') {
             steps {
                 echo 'Build'
-                sh 'mvn clean install'             
+                sh 'mvn clean install -Dmaven.test.skip=true'             
             }
         }
         stage('Test') {
@@ -39,7 +39,8 @@ pipeline {
         stage('Deploy to QA') {
             steps {
                 echo 'Deploy to QA'
-                sh 'zip -g bermtec-0.0.1.zip **/target'
+                sh 'pwd'
+                sh 'zip -g bermtec-0.0.1.zip **/target/bermtec-0.0.1.jar'
                  
                  sh 'aws --version'
                  sh './deploy-test.sh'
