@@ -16,7 +16,7 @@ pipeline {
         AWS_SECRET_KEY = credentials('aws_secret_key')
         ARTIFACTID = readMavenPom().getArtifactId()
         VERSION = readMavenPom().getVersion()
-        JARNAME = ARTIFACTID+'-'+VERSION+'.jar'
+        JARNAME = $ARTIFACTID+'-'+$VERSION+'.jar'
     }
 
     stages {
