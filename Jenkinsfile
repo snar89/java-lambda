@@ -16,7 +16,6 @@ pipeline {
         AWS_SECRET_KEY = credentials('aws_secret_key')
         ARTIFACTID = readMavenPom().getArtifactId()
         VERSION = readMavenPom().getVersion()
-        JARNAME = $ARTIFACTID+'-'+$VERSION+'.jar'
     }
 
     stages {
@@ -46,6 +45,7 @@ pipeline {
             steps {
                 script {
                     echo 'Deploy to QA'
+                    JARNAME = ${ARTIFACTID}+'-'+${VERSION}+'.jar'
                     echo "JARNAME: ${JARNAME}"
                     sh 'pwd'
                     // sh "zip ${ARTIFACTID}-${VERSION}.zip 'target/${JARNAME}'"            
@@ -81,6 +81,7 @@ pipeline {
                 script {
                     if (env.BRANCH_NAME == "master") {
                         echo 'Deploy to Prod'
+                        JARNAME = ${ARTIFACTID}+'-'+${VERSION}+'.jar'
                         sh "aws s3 cp target/${JARNAME} s3://bermtec288/lambda-prod"
                         //  sh './deploy-test.sh $AWS_ACCESS_KEY $AWS_SECRET_KEY'
                         // if (does_lambda_exist('prodfunction')) {
