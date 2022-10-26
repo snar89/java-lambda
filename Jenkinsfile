@@ -48,12 +48,13 @@ pipeline {
                     JARNAME = ARTIFACTID+'.'+VERSION+'.jar'
                     echo "JARNAME: ${JARNAME}"
                     sh 'pwd'
-                    sh 'zip ${ARTIFACTID}-${VERSION}.zip target/${JARNAME}'              
+                    sh 'cd target'
+                    sh 'zip ${ARTIFACTID}-${VERSION}.zip ${JARNAME}'              
 
                     sh 'aws configure set aws_access_key_id $AWS_ACCESS_KEY'
                     sh 'aws configure set aws_secret_access_key $AWS_SECRET_KEY'
                     sh 'aws configure set region us-east-1' 
-                    sh 'aws s3 cp bermtec-0.0.1.zip s3://bermtec228/lambda-test/'
+                    sh 'aws s3 cp ${ARTIFACTID}-${VERSION}.zip s3://bermtec228/lambda-test/'
                     echo "Stage 2 Yes"
                     // if (does_lambda_exist(${functionName})) {
                     //  sh './deploy-test.sh $AWS_ACCESS_KEY $AWS_SECRET_KEY'
