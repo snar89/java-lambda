@@ -1,5 +1,5 @@
 pipeline {
-    agent none
+    agent any
 
      options {
         //Disable concurrentbuilds for the same job
@@ -98,6 +98,21 @@ pipeline {
             }
         }
 
+    }
+
+    post {
+      failure {
+        echo 'failed'
+             mail to: 'teambermtec@gmail.com',
+             subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
+             body: "Something is wrong with ${env.BUILD_NUMBER}"
+      }
+      success {
+        echo 'Success'
+      }
+      aborted {
+        echo 'aborted'
+      }
     }
 }
 
