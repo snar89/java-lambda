@@ -40,17 +40,18 @@ pipeline {
             steps {
                 echo 'Deploy to QA'
                 sh 'pwd'
-                sh 'zip -g bermtec-0.0.1.zip target/bermtec-0.0.1.jar'
-                 
-                sh 'aws --version'
-                sh 'aws s3 ls'
+                sh 'zip -g bermtec-0.0.1.zip target/bermtec-0.0.1.jar'              
+
                 sh 'aws configure set aws_access_key_id $AWS_ACCESS_KEY'
                 sh 'aws configure set aws_secret_access_key $AWS_SECRET_KEY'
-                //  sh 'aws configure set region us-east-1' 
+                sh 'aws configure set region us-east-1' 
                 sh 'aws s3 cp bermtec-0.0.1.zip s3://bermtec228/lambda-test/'
                 echo "Stage 2 Yes"
+                functionName = 'test'
+                if (does_lambda_exist($functionName)) {
                 //  sh './deploy-test.sh $AWS_ACCESS_KEY $AWS_SECRET_KEY'
-                 sh 'aws lambda update-function-code --function-name test  --zip-file fileb://./target/bermtec-0.0.1.zip'              
+                    sh 'aws lambda update-function-code --function-name $functionName  --zip-file fileb://./target/bermtec-0.0.1.zip'
+                }            
             }
         }
 
@@ -73,8 +74,12 @@ pipeline {
                         echo 'Deploy to Prod'
                         sh 'aws configure set aws_access_key_id $AWS_ACCESS_KEY'
                         sh 'aws configure set aws_secret_access_key $AWS_SECRET_KEY'
-                        sh 'aws s3 cp bermtec-0.0.1.zip s3://bermtec28/lambdaprod'
-                        sh 'aws lambda update-function-code --function-name prodfunction  --zip-file fileb://bermtec-0.0.1.zip'
+                        sh 'aws s3 cp bermtec-0.0.1.zip s3://bermtec288/lambda-prod'
+                         functionName = 'test'
+                        if (does_lambda_exist($functionName)) {
+                            echo 'Function Exists'
+                            sh 'aws lambda update-function-code --function-name prodfunction --s3-bucket bermtec288 --s3-key lambda-prod/bermtec-0.0.1.zip'
+                        }  
                     }
                 }
             }
@@ -95,4 +100,18 @@ pipeline {
         echo 'aborted'
       }
     }
+}
+
+def does_lambda_exist(name) {	
+  isexist=false
+  echo $name
+  try{
+    sh  'aws lambda get-function --function-name $name'
+    isexist=true
+  }
+  catch {
+    echo 'Failed'
+    isexist=true
+  }
+  return isexist
 }
