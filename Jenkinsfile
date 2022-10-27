@@ -45,6 +45,7 @@ pipeline {
         stage('Deploy to QA') {
             agent any
             steps {
+                echo 'Now Deploying'
                 script {
                     echo 'Deploy to QA'
                     echo "ARTIFACTID: ${ARTIFACTID}"
@@ -82,7 +83,7 @@ pipeline {
         }
 
          stage('Deploy to Prod') {
-            agent any
+            agent none
             steps {
                 script {
                     if (env.BRANCH_NAME == "master") {
@@ -106,7 +107,7 @@ pipeline {
     post {
       failure {
         echo 'failed'
-             mail to: 'teambermtec@gmail.com',
+             mail to: 'snaredla89@gmail.com',
              subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
              body: "Something is wrong with ${env.BUILD_NUMBER}"
       }
