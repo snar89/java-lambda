@@ -123,7 +123,7 @@ def does_lambda_exist(String name) {
   isexist=false
   echo $name
   try{
-    sh  'aws lambda get-function --function-name $name'
+    sh  'aws lambda get-function --function-name test'
     isexist=true
   }
   catch(Exception e) {
