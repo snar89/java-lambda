@@ -1,5 +1,5 @@
 pipeline {
-    agent none
+    agent any
 
      options {
         //Disable concurrentbuilds for the same job
@@ -90,7 +90,7 @@ pipeline {
                         echo "ARTIFACTID: ${ARTIFACTID}"
                         echo "VERSION: ${VERSION}"
                         JARNAME = ARTIFACTID+'-'+VERSION+'.jar'
-                        sh "aws s3 cp target/${JARNAME} s3://bermtec288/lambda-prod"
+                        sh "aws s3 cp target/${JARNAME} s3://bermtec288/lambda-prod/"
                         //  sh './deploy-test.sh $AWS_ACCESS_KEY $AWS_SECRET_KEY'
                         // if (does_lambda_exist('prodfunction')) {
                             sh "aws lambda update-function-code --function-name prodfunction --s3-bucket bermtec288 --s3-key lambda-prod/${JARNAME}"
