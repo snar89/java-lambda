@@ -72,7 +72,7 @@ pipeline {
                 echo 'Release to Prod'
                 script {
                     if (env.BRANCH_NAME == "master") {
-                        timeout(time: 10, unit: 'MINUTES') {
+                        timeout(time: 1, unit: 'HOURS') {
                             input('Proceed for Prod  ?')
                         }
                     }
