@@ -28,7 +28,7 @@ pipeline {
         }
 
         stage('Test') {
-            agent any
+            agent none
             steps {
                 echo 'Test'
                 // sh 'mvn test'
