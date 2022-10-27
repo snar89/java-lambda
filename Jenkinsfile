@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent none
 
      options {
         //Disable concurrentbuilds for the same job
@@ -72,7 +72,9 @@ pipeline {
                 echo 'Release to Prod'
                 script {
                     if (env.BRANCH_NAME == "master") {
-                        input('Proceed for Prod  ?')
+                        timeout(time: 1, unit: 'HOURS') {
+                            input('Proceed for Prod  ?')
+                        }
                     }
                 }
 
